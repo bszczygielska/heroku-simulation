@@ -8,25 +8,33 @@ class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      text: '',
+      lights: '',
     };
   }
 
   componentWillMount() {
     socket.on('toSimulation', message => {
-      this.setState({text: message});
+      this.setState({lights: message});
     })
   }
 
   onClickHandler() {
-    socket.emit('fromSimulation')
+    socket.emit('fromSimulation', 'Hello, simulation here!')
+  }
+
+  get coolObjectForRendering() {
+    let result = {};
+    this.state.map(light => {
+      lodash.set(result, light.name, light);
+    });
+    return result;
   }
 
   render() {
     return (
       <div style={{textAlign: "center"}}>
         <button onClick={this.onClickHandler}>Click to emit to server</button>
-        Message from client: {this.state.text}
+        Message from client: {this.coolObjectForRendering}
       </div>
     );
   }
