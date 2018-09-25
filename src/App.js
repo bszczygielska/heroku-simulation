@@ -2,7 +2,7 @@ import React from "react";
 import * as io from 'socket.io-client';
 import 'antd/dist/antd.css';
 
-const socket = io('https://light-manager-client.herokuapp.com/socket');
+const socket = io('https://light-manager-client.herokuapp.com');
 
 class App extends React.Component {
   constructor() {
