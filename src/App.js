@@ -9,11 +9,11 @@ class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      lights: '',
+      lights: [],
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     socket.on('toSimulation', message => {
       this.setState({lights: message});
     })
@@ -25,7 +25,7 @@ class App extends React.Component {
 
   get coolObjectForRendering() {
     let result = {};
-    this.state.map(light => {
+    this.state.lights.length && this.state.lights.map(light => {
       lodash.set(result, light.name, light);
     });
     return result;
