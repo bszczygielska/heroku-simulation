@@ -2,8 +2,21 @@ import React from "react";
 import * as io from 'socket.io-client';
 import 'antd/dist/antd.css';
 import * as lodash from 'lodash';
+import Card from 'antd/lib/card';
+import Avatar from 'antd/es/avatar';
 
 const socket = io('https://light-manager-client.herokuapp.com');
+
+class Light {
+  constructor(args) {
+    this.name = args.name;
+    this.state = args.state;
+    this.hue = args.hue;
+    this.saturition = args.saturition;
+    this.hex = args.hex;
+    this._id = args._id
+  }
+}
 
 class App extends React.Component {
   constructor() {
@@ -15,13 +28,15 @@ class App extends React.Component {
 
   componentDidMount() {
     socket.on('toSimulation', message => {
-      this.setState({lights: message});
+      const lights = message.map(light => new Light(light))
+        .sort((a, b) => a.name.split('.').length - b.name.split('.').length);
+      this.setState({lights: lights});
     })
   }
 
-  onClickHandler() {
-    socket.emit('fromSimulation', 'Hello, simulation here!')
-  }
+  // onClickHandler() {
+  //   socket.emit('fromSimulation', 'Hello, simulation here!')
+  // }
 
   get coolObjectForRendering() {
     let result = {};
@@ -31,11 +46,38 @@ class App extends React.Component {
     return result;
   }
 
+  decideWhatRender(obj, path) {
+    if (typeof obj !== 'object')
+      return;
+    let items = [];
+    for (let key in obj) {
+      let newPath = (path === 'blank') ? `${key}` : `${path}.${key}`;
+      const item = (obj[key] instanceof Light) ? this.renderLight(obj[key]) : this.renderRoom(key, obj[key], newPath);
+      items.push(item);
+    }
+    return items;
+  }
+
+  renderLight(light) {
+    return <span>
+      <Avatar style={{backgroundColor: light.state ? light.hex || 'yellow' : 'gray'}} icon="bulb"/>
+    </span>
+  }
+
+  renderRoom(name, room, path) {
+    return <Card
+      key={`room_${name}`}
+      title={name}
+    >
+      {this.decideWhatRender(room, path)}
+    </Card>
+  }
+
   render() {
+    console.log(this.state)
     return (
       <div style={{textAlign: "center"}}>
-        <button onClick={this.onClickHandler}>Click to emit to server</button>
-        Message from client: {this.coolObjectForRendering}
+        {this.renderRoom('Your project', this.coolObjectForRendering, 'blank')}
       </div>
     );
   }
