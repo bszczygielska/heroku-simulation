@@ -1,6 +1,7 @@
 import React from "react";
 import * as io from 'socket.io-client';
 import 'antd/dist/antd.css';
+import * as lodash from 'lodash';
 
 const socket = io('https://light-manager-client.herokuapp.com');
 
