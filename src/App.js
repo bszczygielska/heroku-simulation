@@ -28,15 +28,16 @@ class App extends React.Component {
 
   componentDidMount() {
     socket.on('toSimulation', message => {
+      console.log(message)
       const lights = message.map(light => new Light(light))
         .sort((a, b) => a.name.split('.').length - b.name.split('.').length);
       this.setState({lights: lights});
     })
   }
 
-  // onClickHandler() {
-  //   socket.emit('fromSimulation', 'Hello, simulation here!')
-  // }
+  onClickHandler(light) {
+    socket.emit('fromSimulation', light)
+  }
 
   get coolObjectForRendering() {
     let result = {};
@@ -60,7 +61,10 @@ class App extends React.Component {
 
   renderLight(light) {
     return <span>
-      <Avatar style={{backgroundColor: light.state ? light.hex || 'yellow' : 'gray'}} icon="bulb"/>
+      <Avatar
+        onClick={() => this.onClickHandler(light)}
+        style={{backgroundColor: light.state ? light.hex || 'yellow' : 'gray', margin: 5 }}
+        icon="bulb"/>
     </span>
   }
 
@@ -68,13 +72,13 @@ class App extends React.Component {
     return <Card
       key={`room_${name}`}
       title={name}
+      style={{ display: 'flex', flexDirection: 'column', margin: 10}}
     >
       {this.decideWhatRender(room, path)}
     </Card>
   }
 
   render() {
-    console.log(this.state)
     return (
       <div style={{textAlign: "center"}}>
         {this.renderRoom('Your project', this.coolObjectForRendering, 'blank')}
