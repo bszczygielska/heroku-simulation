@@ -28,7 +28,6 @@ class App extends React.Component {
 
   componentDidMount() {
     socket.on('toSimulation', message => {
-      console.log(message)
       const lights = message.map(light => new Light(light))
         .sort((a, b) => a.name.split('.').length - b.name.split('.').length);
       this.setState({lights: lights});
@@ -36,7 +35,9 @@ class App extends React.Component {
   }
 
   onClickHandler(light) {
-    socket.emit('fromSimulation', light)
+    light.state = !light.state;
+    socket.emit('fromSimulation', light);
+    this.forceUpdate()
   }
 
   get coolObjectForRendering() {
