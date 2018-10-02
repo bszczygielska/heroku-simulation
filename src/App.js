@@ -73,7 +73,7 @@ class App extends React.Component {
     return <Card
       key={`room_${name}`}
       title={name}
-      style={{ display: 'flex', flexDirection: 'column', margin: 10}}
+      style={{ backgroundColor: 'lightgrey', display: 'flex', flexDirection: 'column', margin: 10}}
     >
       {this.decideWhatRender(room, path)}
     </Card>
